@@ -25,6 +25,7 @@ from __future__ import print_function
 import datetime as _datetime
 import requests as _requests
 import pandas as _pd
+import pytz
 # import numpy as _np
 
 # import json as _json
@@ -61,7 +62,7 @@ class Ticker(TickerBase):
             return r['optionChain']['result'][0]['options'][0]
         return {}
 
-    def _options2df(self, opt, tz=None):
+    def _options2df(self, opt, tz=pytz.UTC):
         data = _pd.DataFrame(opt).reindex(columns=[
             'contractSymbol',
             'lastTradeDate',
@@ -84,7 +85,7 @@ class Ticker(TickerBase):
             data['lastTradeDate'] = data['lastTradeDate'].tz_localize(tz)
         return data
 
-    def option_chain(self, date=None, proxy=None, tz=None):
+    def option_chain(self, date=None, proxy=None, tz=pytz.UTC):
         if date is None:
             options = self._download_options(proxy=proxy)
         else:

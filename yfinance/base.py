@@ -26,6 +26,7 @@ import datetime as _datetime
 import requests as _requests
 import pandas as _pd
 import numpy as _np
+import pytz
 
 try:
     from urllib.parse import quote as urlencode
@@ -76,7 +77,7 @@ class TickerBase():
     def history(self, period="1mo", interval="1d",
                 start=None, end=None, prepost=False, actions=True,
                 auto_adjust=True, back_adjust=False,
-                proxy=None, rounding=False, tz=None, **kwargs):
+                proxy=None, rounding=False, tz=pytz.UTC, **kwargs):
         """
         :Parameters:
             period : str
@@ -228,7 +229,7 @@ class TickerBase():
         df["Stock Splits"].fillna(0, inplace=True)
 
         # index eod/intraday
-        df.index = df.index.tz_localize("UTC").tz_convert(
+        df.index = df.index.tz_convert(
             data["chart"]["result"][0]["meta"]["exchangeTimezoneName"])
 
         if params["interval"][-1] == "m":

@@ -27,6 +27,7 @@ import pandas as _pd
 import numpy as _np
 import sys as _sys
 import re as _re
+import pytz
 
 try:
     import ujson as _json
@@ -108,7 +109,7 @@ def back_adjust(data):
     return df[["Open", "High", "Low", "Close", "Volume"]]
 
 
-def parse_quotes(data, tz=None):
+def parse_quotes(data, tz=pytz.UTC):
     timestamps = data["timestamp"]
     ohlc = data["indicators"]["quote"][0]
     volumes = ohlc["volume"]
@@ -137,9 +138,9 @@ def parse_quotes(data, tz=None):
     return quotes
 
 
-def parse_actions(data, tz=None):
-    dividends = _pd.DataFrame(columns=["Dividends"])
-    splits = _pd.DataFrame(columns=["Stock Splits"])
+def parse_actions(data, tz=pytz.UTC):
+    dividends = _pd.DataFrame(columns=["Dividends"], index=_pd.to_datetime([]).tz_localize(None))
+    splits = _pd.DataFrame(columns=["Stock Splits"], index=_pd.to_datetime([]).tz_localize(None))
 
     if "events" in data:
         if "dividends" in data["events"]:
@@ -159,10 +160,9 @@ def parse_actions(data, tz=None):
             splits["Stock Splits"] = splits["numerator"] / \
                 splits["denominator"]
             splits = splits["Stock Splits"]
+        splits.index = splits.index.tz_localize(tz)
+        dividends.index = dividends.index.tz_localize(tz)
 
-        if tz is not None:
-            splits.index = splits.index.tz_localize(tz)
-            dividends.index = splits.index.tz_localize(tz)
     return dividends, splits
 
 
