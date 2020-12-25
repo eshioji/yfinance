@@ -160,8 +160,9 @@ def parse_actions(data, tz=pytz.UTC):
             splits["Stock Splits"] = splits["numerator"] / \
                 splits["denominator"]
             splits = splits["Stock Splits"]
-        splits.index = splits.index.tz_localize(tz)
-        dividends.index = dividends.index.tz_localize(tz)
+
+    splits.index = splits.index.tz_localize(tz)
+    dividends.index = dividends.index.tz_localize(tz)
 
     return dividends, splits
 
