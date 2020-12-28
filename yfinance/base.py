@@ -316,7 +316,7 @@ class TickerBase():
 
         # sustainability
         d = {}
-        if isinstance(data.get('esgScores'), dict):
+        if isinstance(data.get('esgScores'), dict) and data.get('esgScores').keys() != {'err'}:
             for item in data['esgScores']:
                 if not isinstance(data['esgScores'][item], (dict, list)):
                     d[item] = data['esgScores'][item]
@@ -338,7 +338,7 @@ class TickerBase():
             if isinstance(data.get(item), dict):
                 self._info.update(data[item])
 
-        self._info['regularMarketPrice'] = self._info['regularMarketOpen']
+        self._info['regularMarketPrice'] = self._info.get('regularMarketOpen')
         self._info['logo_url'] = ""
         try:
             domain = self._info['website'].split(
